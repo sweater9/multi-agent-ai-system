@@ -1,516 +1,689 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Agent AI System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-        
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 120px;
-            transition: border-color 0.3s;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .status {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        
-        .status.show {
-            display: block;
-        }
-        
-        .status.processing {
-            background: #e3f2fd;
-            color: #1976d2;
-            border-left: 4px solid #1976d2;
-        }
-        
-        .status.complete {
-            background: #e8f5e9;
-            color: #388e3c;
-            border-left: 4px solid #388e3c;
-        }
-        
-        .status.error {
-            background: #ffebee;
-            color: #c62828;
-            border-left: 4px solid #c62828;
-        }
-        
-        .results-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        @media (max-width: 1024px) {
-            .results-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .results-container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .result-tab {
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        
-        .result-tab:hover {
-            background: #e0e0e0;
-        }
-        
-        .result-tab.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .result-content {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            max-height: 500px;
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
-        }
-        
-        .result-content pre {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-        
-        .projects-list {
-            margin-top: 20px;
-        }
-        
-        .project-item {
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .project-item:hover {
-            background: #e0e0e0;
-            transform: translateX(5px);
-        }
-        
-        .project-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .project-info {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
-        
-        .project-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 12px;
-            width: auto;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(102, 126, 234, 0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .divider {
-            height: 1px;
-            background: #e0e0e0;
-            margin: 30px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Agent AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --bg-elevated: #12151c;
+      --bg-soft: #181c27;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f3f5f9;
+      --text-muted: #9aa3b5;
+      --text-dim: #6b7385;
+      --accent: #7c9cff;
+      --accent-2: #9b7dff;
+      --accent-soft: rgba(124,156,255,0.14);
+      --success: #3dd68c;
+      --success-soft: rgba(61,214,140,0.12);
+      --warning: #f5b942;
+      --warning-soft: rgba(245,185,66,0.12);
+      --danger: #ff6b7a;
+      --danger-soft: rgba(255,107,122,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --font: "Inter", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(124,156,255,0.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 0%, rgba(155,125,255,0.14), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    button, input, textarea { font: inherit; color: inherit; }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(124,156,255,0.35);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 4px var(--success-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 40%), var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 18px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-head h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .card-body { padding: 18px 20px 20px; }
+
+    .field { margin-bottom: 14px; }
+
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 550;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--text-dim); }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: rgba(124,156,255,0.55);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s, background 0.15s;
+    }
+
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+    .btn-primary {
+      width: 100%;
+      color: #0b0d12;
+      background: linear-gradient(135deg, #9db4ff, #b39bff);
+      box-shadow: 0 10px 24px rgba(124,156,255,0.28);
+    }
+
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      border-radius: 9px;
+    }
+
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-strong); background: rgba(255,255,255,0.03); }
+
+    .status {
+      display: none;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      border: 1px solid transparent;
+    }
+
+    .status.show { display: flex; align-items: flex-start; gap: 10px; }
+    .status.processing { background: var(--warning-soft); color: #ffd27a; border-color: rgba(245,185,66,0.25); }
+    .status.complete { background: var(--success-soft); color: #7dffb5; border-color: rgba(61,214,140,0.25); }
+    .status.error { background: var(--danger-soft); color: #ff9aa5; border-color: rgba(255,107,122,0.25); }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,210,122,0.25);
+      border-top-color: #ffd27a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 14px 0 4px;
+    }
+
+    @media (max-width: 720px) {
+      .pipeline { grid-template-columns: 1fr 1fr; }
+    }
+
+    .step {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 10px 12px;
+      min-height: 74px;
+    }
+
+    .step .step-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .step .step-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .step.active {
+      border-color: rgba(245,185,66,0.4);
+      background: linear-gradient(180deg, rgba(245,185,66,0.1), transparent);
+    }
+
+    .step.done {
+      border-color: rgba(61,214,140,0.35);
+      background: linear-gradient(180deg, rgba(61,214,140,0.1), transparent);
+    }
+
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .project {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .project:hover,
+    .project.active {
+      border-color: rgba(124,156,255,0.4);
+      background: linear-gradient(180deg, rgba(124,156,255,0.08), transparent);
+    }
+
+    .project-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: -0.01em;
+    }
+
+    .project-meta {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 28px 12px;
+      font-size: 0.9rem;
+    }
+
+    .results-card .card-body { padding-top: 14px; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 550;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab:hover { color: var(--text); border-color: var(--border-strong); }
+    .tab.active {
+      color: #0b0d12;
+      background: linear-gradient(135deg, #9db4ff, #b39bff);
+      border-color: transparent;
+    }
+
+    .result-pane {
+      background: #0e1118;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      min-height: 320px;
+      max-height: 560px;
+      overflow: auto;
+      padding: 18px 18px 22px;
+    }
+
+    .result-pane .md {
+      font-size: 0.92rem;
+      color: #d7dce8;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--font);
+    }
+
+    .result-pane .md code,
+    .result-pane .md pre {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+    }
+
+    .result-pane .md pre {
+      background: #151923;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .hint {
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🤖 Multi-Agent AI System</h1>
-            <p class="subtitle">Powered by Google Gemini</p>
-        </header>
-        
-        <div class="main-grid">
-            <!-- Input Section -->
-            <div class="card">
-                <h2>📝 Create New Project</h2>
-                
-                <div class="form-group">
-                    <label for="projectName">Project Name</label>
-                    <input type="text" id="projectName" placeholder="e.g., water_tracker_app">
-                </div>
-                
-                <div class="form-group">
-                    <label for="userRequest">Project Description</label>
-                    <textarea id="userRequest" placeholder="Describe what you want to build...
-
-Example: Build a water intake tracker web app with React that:
-- Allows users to log water consumption
-- Shows daily goal progress (8 glasses/day)
-- Displays weekly charts
-- Has a simple, clean UI
-- Works on mobile"></textarea>
-                </div>
-                
-                <div class="status" id="status"></div>
-                
-                <button onclick="processRequest()" id="processBtn">
-                    Start Workflow
-                </button>
-            </div>
-            
-            <!-- Recent Projects Section -->
-            <div class="card">
-                <h2>📂 Recent Projects</h2>
-                <div id="projectsList" class="projects-list">
-                    <p style="color: #999; text-align: center;">Loading projects...</p>
-                </div>
-            </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">MA</div>
+        <div>
+          <h1>Multi-Agent AI</h1>
+          <p>Research → Analysis → Development → Coding → QA</p>
         </div>
-        
-        <!-- Results Section -->
-        <div class="card">
-            <h2>📊 Agent Outputs</h2>
-            
-            <div id="noResults" style="text-align: center; color: #999; padding: 20px;">
-                Create a project to see agent outputs here
-            </div>
-            
-            <div id="resultsSection" style="display: none;">
-                <div class="results-container">
-                    <div class="result-tab" onclick="showResult('research')">
-                        🔍 Research
-                    </div>
-                    <div class="result-tab" onclick="showResult('analysis')">
-                        📊 Analysis
-                    </div>
-                    <div class="result-tab" onclick="showResult('development')">
-                        🏗️ Development
-                    </div>
-                    <div class="result-tab" onclick="showResult('coding')">
-                        💻 Coding
-                    </div>
-                    <div class="result-tab" onclick="showResult('qa')">
-                        ✅ QA
-                    </div>
-                </div>
-                
-                <div class="result-content" id="resultContent">
-                    Select an agent to view results
-                </div>
-                
-                <button onclick="downloadProject()" class="btn-small" style="margin-top: 15px; width: 100%;">
-                    📥 Download All Results
-                </button>
-            </div>
-        </div>
+      </div>
+      <div class="pill"><span class="pill-dot"></span> Gemini workflow live</div>
     </div>
-    
-    <script>
-        let currentProject = null;
-        let currentResults = {};
-        
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            statusDiv.className = `status show ${type}`;
+
+    <div class="layout">
+      <section class="card">
+        <div class="card-head">
+          <h2>New project</h2>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="projectName">Project name</label>
+            <input type="text" id="projectName" placeholder="e.g. water-tracker">
+          </div>
+          <div class="field">
+            <label for="userRequest">What should the agents build?</label>
+            <textarea id="userRequest" placeholder="Describe the product, constraints, stack, and success criteria…"></textarea>
+          </div>
+
+          <div class="status" id="status"></div>
+
+          <div class="pipeline" id="pipeline" aria-hidden="true">
+            <div class="step" data-step="research"><div class="step-label">01</div><div class="step-name">Research</div></div>
+            <div class="step" data-step="analysis"><div class="step-label">02</div><div class="step-name">Analysis</div></div>
+            <div class="step" data-step="development"><div class="step-label">03</div><div class="step-name">Development</div></div>
+            <div class="step" data-step="coding"><div class="step-label">04</div><div class="step-name">Coding</div></div>
+            <div class="step" data-step="qa"><div class="step-label">05</div><div class="step-name">QA</div></div>
+          </div>
+
+          <button class="btn btn-primary" id="processBtn" onclick="processRequest()">Run agent workflow</button>
+          <p class="hint">Typical run takes a couple of minutes while each agent finishes in sequence.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Recent projects</h2>
+          <button class="btn btn-ghost" onclick="loadProjects()">Refresh</button>
+        </div>
+        <div class="card-body">
+          <div id="projectsList" class="projects">
+            <div class="empty">Loading projects…</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card results-card">
+      <div class="card-head">
+        <h2>Agent outputs</h2>
+        <span id="activeProjectLabel" class="hint" style="margin:0"></span>
+      </div>
+      <div class="card-body">
+        <div id="noResults" class="empty">Run a project to see Research, Analysis, Development, Coding, and QA here.</div>
+        <div id="resultsSection" style="display:none">
+          <div class="tabs" id="resultTabs">
+            <button class="tab" data-agent="research" onclick="showResult('research', this)">Research</button>
+            <button class="tab" data-agent="analysis" onclick="showResult('analysis', this)">Analysis</button>
+            <button class="tab" data-agent="development" onclick="showResult('development', this)">Development</button>
+            <button class="tab" data-agent="coding" onclick="showResult('coding', this)">Coding</button>
+            <button class="tab" data-agent="qa" onclick="showResult('qa', this)">QA</button>
+          </div>
+          <div class="result-pane"><div class="md" id="resultContent">Select an agent</div></div>
+          <div class="result-actions">
+            <button class="btn btn-ghost" onclick="downloadProject()">Download ZIP</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let currentProject = null;
+    let currentResults = {};
+
+    const AGENT_ORDER = ['research', 'analysis', 'development', 'coding', 'qa'];
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&')
+        .replace(/</g, '<')
+        .replace(/>/g, '>');
+    }
+
+    function formatMarkdownLite(text) {
+      const escaped = escapeHtml(text || '');
+      return escaped
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        .replace(/^### (.*)$/gm, '<strong>$1</strong>')
+        .replace(/^## (.*)$/gm, '<strong style="font-size:1.05em">$1</strong>')
+        .replace(/^# (.*)$/gm, '<strong style="font-size:1.15em">$1</strong>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+
+    function showStatus(message, type) {
+      const el = document.getElementById('status');
+      const spinning = type === 'processing'
+        ? '<span class="spinner" aria-hidden="true"></span>'
+        : '';
+      el.innerHTML = spinning + `<span>${escapeHtml(message.replace(/^[^\w#]*\s*/, '').replace(/^❌\s*/, '').replace(/^✅\s*/, '').replace(/^⏳\s*/, ''))}</span>`;
+      // Keep original message content readable; strip noisy emoji prefixes only for display consistency
+      el.querySelector('span').textContent = message.replace(/^[⏳❌✅]\s*/, '');
+      el.className = `status show ${type}`;
+    }
+
+    function resetPipeline() {
+      document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active', 'done');
+      });
+    }
+
+    function updatePipelineFromMessage(message) {
+      const lower = (message || '').toLowerCase();
+      let active = null;
+      for (const agent of AGENT_ORDER) {
+        if (lower.includes(agent)) {
+          active = agent;
+          break;
         }
-        
-        function hideStatus() {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = 'status';
+      }
+      document.querySelectorAll('.step').forEach(step => {
+        const name = step.dataset.step;
+        step.classList.remove('active', 'done');
+        if (!active) return;
+        const idx = AGENT_ORDER.indexOf(name);
+        const activeIdx = AGENT_ORDER.indexOf(active);
+        if (idx < activeIdx) step.classList.add('done');
+        if (idx === activeIdx) step.classList.add('active');
+      });
+    }
+
+    function markPipelineComplete() {
+      document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+        step.classList.add('done');
+      });
+    }
+
+    async function processRequest() {
+      const projectName = document.getElementById('projectName').value.trim()
+        || ('project_' + new Date().toISOString().slice(0, 10).replace(/-/g, ''));
+      const userRequest = document.getElementById('userRequest').value.trim();
+
+      if (!userRequest) {
+        showStatus('Please enter a project description.', 'error');
+        return;
+      }
+
+      document.getElementById('projectName').value = projectName;
+      document.getElementById('processBtn').disabled = true;
+      resetPipeline();
+      showStatus('Starting workflow…', 'processing');
+
+      try {
+        const response = await fetch('/api/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ request: userRequest, project_name: projectName })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Request failed');
+
+        currentProject = projectName;
+        document.getElementById('activeProjectLabel').textContent = projectName;
+
+        let done = false;
+        let attempts = 0;
+        while (!done && attempts < 180) {
+          await new Promise(r => setTimeout(r, 2000));
+          const statusResponse = await fetch('/api/status');
+          const statusData = await statusResponse.json();
+
+          if (statusData.status === 'complete') {
+            showStatus(statusData.message || 'Workflow complete', 'complete');
+            markPipelineComplete();
+            await loadProjectResults(projectName);
+            done = true;
+          } else if (statusData.status === 'error') {
+            showStatus(statusData.message || 'Workflow failed', 'error');
+            done = true;
+          } else {
+            updatePipelineFromMessage(statusData.message || '');
+            showStatus(statusData.message || 'Processing…', 'processing');
+          }
+          attempts += 1;
         }
-        
-        async function processRequest() {
-            const projectName = document.getElementById('projectName').value.trim() || 'project_' + new Date().toISOString().slice(0,10);
-            const userRequest = document.getElementById('userRequest').value.trim();
-            
-            if (!userRequest) {
-                showStatus('❌ Please enter a project description', 'error');
-                return;
-            }
-            
-            document.getElementById('projectName').value = projectName;
-            document.getElementById('processBtn').disabled = true;
-            
-            showStatus('⏳ Processing... This may take a few minutes', 'processing');
-            
-            try {
-                const response = await fetch('/api/process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ request: userRequest, project_name: projectName })
-                });
-                
-                const data = await response.json();
-                currentProject = projectName;
-                
-                // Poll for results
-                let done = false;
-                let attempts = 0;
-                
-                while (!done && attempts < 120) { // 2 minute timeout
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    const statusResponse = await fetch('/api/status');
-                    const statusData = await statusResponse.json();
-                    
-                    if (statusData.status === 'complete') {
-                        showStatus('✅ ' + statusData.message, 'complete');
-                        loadProjectResults(projectName);
-                        done = true;
-                    } else if (statusData.status === 'error') {
-                        showStatus('❌ ' + statusData.message, 'error');
-                        done = true;
-                    } else {
-                        showStatus(statusData.message, 'processing');
-                    }
-                    
-                    attempts++;
-                }
-                
-                if (!done) {
-                    showStatus('⏰ Processing is taking longer than expected. Check back in a moment.', 'processing');
-                }
-                
-                loadProjects();
-                
-            } catch (error) {
-                showStatus('❌ Error: ' + error.message, 'error');
-            } finally {
-                document.getElementById('processBtn').disabled = false;
-            }
+
+        if (!done) {
+          showStatus('Still running longer than expected. You can refresh projects in a moment.', 'processing');
         }
-        
-        async function loadProjectResults(projectName) {
-            try {
-                const response = await fetch(`/api/results/${projectName}`);
-                const data = await response.json();
-                
-                if (data.results) {
-                    currentResults = data.results;
-                    document.getElementById('noResults').style.display = 'none';
-                    document.getElementById('resultsSection').style.display = 'block';
-                    showResult('research');
-                }
-            } catch (error) {
-                console.error('Error loading results:', error);
-            }
+        await loadProjects();
+      } catch (error) {
+        showStatus(error.message, 'error');
+      } finally {
+        document.getElementById('processBtn').disabled = false;
+      }
+    }
+
+    async function loadProjectResults(projectName) {
+      try {
+        const response = await fetch(`/api/results/${encodeURIComponent(projectName)}`);
+        const data = await response.json();
+        if (!data.results) return;
+
+        currentProject = projectName;
+        currentResults = data.results;
+        document.getElementById('activeProjectLabel').textContent = projectName;
+        document.getElementById('noResults').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'block';
+
+        document.querySelectorAll('.project').forEach(el => {
+          el.classList.toggle('active', el.dataset.name === projectName);
+        });
+
+        const firstTab = document.querySelector('.tab[data-agent="research"]');
+        showResult('research', firstTab);
+      } catch (error) {
+        console.error('Error loading results:', error);
+      }
+    }
+
+    function showResult(agent, tabEl) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      if (tabEl) tabEl.classList.add('active');
+      const content = currentResults[agent] || 'No output for this agent yet.';
+      document.getElementById('resultContent').innerHTML = formatMarkdownLite(content);
+    }
+
+    async function loadProjects() {
+      try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+        const list = document.getElementById('projectsList');
+
+        if (!data.projects || data.projects.length === 0) {
+          list.innerHTML = '<div class="empty">No projects yet. Run your first workflow.</div>';
+          return;
         }
-        
-        function showResult(agent) {
-            // Update active tab
-            document.querySelectorAll('.result-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Show content
-            const content = currentResults[agent] || 'No output for this agent';
-            document.getElementById('resultContent').innerHTML = `<pre>${content}</pre>`;
-        }
-        
-        async function loadProjects() {
-            try {
-                const response = await fetch('/api/projects');
-                const data = await response.json();
-                
-                const projectsList = document.getElementById('projectsList');
-                
-                if (data.projects.length === 0) {
-                    projectsList.innerHTML = '<p style="color: #999; text-align: center;">No projects yet</p>';
-                    return;
-                }
-                
-                projectsList.innerHTML = data.projects.map(project => `
-                    <div class="project-item" onclick="loadProjectResults('${project.name}'); currentProject = '${project.name}';">
-                        <div>
-                            <div class="project-name">${project.name}</div>
-                            <div class="project-info">${project.agents} agents completed</div>
-                        </div>
-                        <div class="project-actions">
-                            <button class="btn-small" onclick="downloadProject('${project.name}'); event.stopPropagation();">
-                                Download
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        }
-        
-        async function downloadProject(projectName) {
-            projectName = projectName || currentProject;
-            if (!projectName) return;
-            
-            window.location.href = `/api/download/${projectName}`;
-        }
-        
-        // Load projects on page load
-        window.addEventListener('load', loadProjects);
-    </script>
+
+        list.innerHTML = data.projects.map(project => `
+          <div class="project ${project.name === currentProject ? 'active' : ''}" data-name="${escapeHtml(project.name)}">
+            <div>
+              <div class="project-name">${escapeHtml(project.name)}</div>
+              <div class="project-meta">${project.agents} agent outputs</div>
+            </div>
+            <button class="btn btn-ghost" type="button">Open</button>
+          </div>
+        `).join('');
+
+        list.querySelectorAll('.project').forEach(el => {
+          el.addEventListener('click', () => loadProjectResults(el.dataset.name));
+        });
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        document.getElementById('projectsList').innerHTML = '<div class="empty">Could not load projects.</div>';
+      }
+    }
+
+    function downloadProject(projectName) {
+      projectName = projectName || currentProject;
+      if (!projectName) return;
+      window.location.href = `/api/download/${encodeURIComponent(projectName)}`;
+    }
+
+    window.addEventListener('load', loadProjects);
+  </script>
 </body>
 </html>
