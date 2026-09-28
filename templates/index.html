@@ -3,10 +3,10 @@ let currentProject = null;
 let currentResults = {};
 const AGENT_ORDER = ['research', 'analysis', 'development', 'coding', 'qa'];
 function escapeHtml(str) {
-return String(str)
-.replace(/&/g, '&')
-.replace(/</g, '<')
-.replace(/>/g, '>');
+const amp = '&' + 'amp;';
+const lt = '&' + 'lt;';
+const gt = '&' + 'gt;';
+return String(str).replace(/&/g, amp).replace(/</g, lt).replace(/>/g, gt);
 }
 function formatMarkdownLite(text) {
 const escaped = escapeHtml(text || '');
