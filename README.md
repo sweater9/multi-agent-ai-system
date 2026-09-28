@@ -74,6 +74,24 @@ python3 gemini_agents_working.py
 
 Settings live in `.env` (copied from `gemini.env.example`). Never commit your real `.env` file or API key.
 
+## Features
+
+### File uploads
+Attach files in the web UI ("Insert files") before running a workflow. Uploads are stored under `projects/<project_name>/uploads/` and included as context for the research agent (text files up to ~80KB total; binaries are listed by name/size only). A short file list is passed through the rest of the pipeline. ZIP downloads include uploads.
+
+`POST /api/process` accepts either JSON (`request`, `project_name`) or `multipart/form-data` with the same fields plus `files[]`.
+
+### GitHub push
+When `GITHUB_TOKEN` (and preferably `GITHUB_USERNAME`) are set on the server, the UI shows a connected GitHub panel. Use **Push to GitHub** to publish the current project's agent outputs and uploads to a repo via the GitHub Contents API (`GET /api/github/status`, `POST /api/github/push`).
+
+**Render / production:** set these environment variables on the service (do not commit secrets):
+
+- `GEMINI_API_KEY` (required)
+- `GITHUB_TOKEN` — personal access token with `repo` scope (required for push)
+- `GITHUB_USERNAME` — your GitHub username (used when the repo field is a bare name)
+- `GITHUB_EMAIL` — optional, documented for git identity
+
+
 ## Limitations
 
 - Agents run sequentially, so a full run takes several model calls.
